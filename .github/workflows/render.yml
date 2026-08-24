@@ -1,0 +1,103 @@
+name: Render video
+run-name: render-${{ inputs.request_id || 'push-smoke' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_id:
+        description: Stable request id used for run correlation
+        required: true
+        type: string
+      request_b64:
+        description: Base64-encoded UTF-8 render request JSON
+        required: true
+        type: string
+      request_sha256:
+        description: SHA-256 of the exact decoded request bytes
+        required: true
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/render.yml'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'remotion.config.ts'
+      - 'src/**'
+      - 'scripts/**'
+      - 'contracts/smoke-request.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: remotion-${{ inputs.request_id || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    name: Remote Remotion render
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout pinned source commit
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install runtime dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Ensure ffprobe is available
+        shell: bash
+        run: |
+          if ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+          ffprobe -version | head -n 1
+
+      - name: Prepare and verify request
+        id: request
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUEST_B64: ${{ inputs.request_b64 }}
+          REQUEST_SHA256: ${{ inputs.request_sha256 }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            printf '%s' "$REQUEST_B64" | base64 --decode > request.json
+            actual="$(sha256sum request.json | awk '{print $1}')"
+            if [ "$actual" != "$REQUEST_SHA256" ]; then
+              echo "REQUEST_SHA256_MISMATCH expected=$REQUEST_SHA256 actual=$actual" >&2
+              exit 1
+            fi
+            echo "sha256=$actual" >> "$GITHUB_OUTPUT"
+          else
+            cp contracts/smoke-request.json request.json
+            actual="$(sha256sum request.json | awk '{print $1}')"
+            echo "sha256=$actual" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Render and verify
+        env:
+          EXPECTED_REQUEST_ID: ${{ inputs.request_id }}
+          EXPECTED_REQUEST_SHA256: ${{ steps.request.outputs.sha256 }}
+        run: node scripts/render-request.mjs request.json
+
+      - name: Upload render evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: remotion-${{ inputs.request_id || 'push-smoke' }}-${{ github.run_id }}
+          path: out/
+          if-no-files-found: warn
+          retention-days: 7
