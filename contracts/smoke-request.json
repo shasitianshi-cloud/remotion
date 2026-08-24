@@ -1,0 +1,16 @@
+{
+  "request_id": "smoke-image-motion-v1",
+  "composition": "ImageMotion",
+  "props": {
+    "imageUrl": "",
+    "motion": "push-in",
+    "backgroundColor": "#111111",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "durationFrames": 90
+  },
+  "output": {
+    "codec": "h264"
+  }
+}
