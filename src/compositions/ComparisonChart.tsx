@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {z} from 'zod';
+import {contentFontFamily} from '../fonts';
 
 // Adapted from reactvideoeditor/remotion-templates templates/comparison-chart.tsx
 // Source commit: 6209b724798e48ff395f8df1a6fa2d26082372b5 (MIT)
@@ -89,19 +90,19 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
       style={{
         background: `linear-gradient(155deg, ${backgroundColor}, #0b1020)`,
         color: textColor,
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: contentFontFamily,
         padding: '6% 9%',
         boxSizing: 'border-box'
       }}
     >
-      <div style={{fontSize: 48, fontWeight: 780, textAlign: 'center', marginBottom: 42}}>{title}</div>
+      <div style={{fontSize: 48, fontWeight: 800, textAlign: 'center', marginBottom: 42}}>{title}</div>
       <div style={{flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 90, minHeight: 0}}>
         {renderSide(leftLabel, leftValue, leftColor, leftProgress)}
         <div style={{height: '82%', width: 2, backgroundColor: '#ffffff22', alignSelf: 'center'}} />
         {renderSide(rightLabel, rightValue, rightColor, rightProgress)}
       </div>
       {note ? (
-        <div style={{fontSize: 28, lineHeight: 1.4, textAlign: 'center', opacity: noteOpacity * 0.68, marginTop: 28}}>{note}</div>
+        <div style={{fontSize: 28, lineHeight: 1.4, textAlign: 'center', opacity: noteOpacity * 0.68, marginTop: 28, fontWeight: 400}}>{note}</div>
       ) : null}
     </AbsoluteFill>
   );
