@@ -5,10 +5,12 @@ import {TextHighlight, textHighlightSchema} from './compositions/TextHighlight';
 import {StatCounter, statCounterSchema} from './compositions/StatCounter';
 import {ComparisonChart, comparisonChartSchema} from './compositions/ComparisonChart';
 import {ProgressSteps, progressStepsSchema} from './compositions/ProgressSteps';
+import {TimelineAssembly, timelineAssemblySchema} from './compositions/TimelineAssembly';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition id="TimelineAssembly" component={TimelineAssembly} schema={timelineAssemblySchema} durationInFrames={90} fps={30} width={1280} height={720} defaultProps={{audio_file:'assets/audio.wav',visual_items:[],width:1280,height:720,fps:30,durationFrames:90}} calculateMetadata={({props})=>({durationInFrames:props.durationFrames,fps:props.fps,width:props.width,height:props.height})}/>
       <Composition
         id="ImageMotion"
         component={ImageMotion}
