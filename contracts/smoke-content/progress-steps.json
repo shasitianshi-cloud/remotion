@@ -1,0 +1,21 @@
+{
+  "request_id": "content-smoke-progress-steps-v1",
+  "composition": "ProgressSteps",
+  "props": {
+    "title": "分工为什么会提高产出？",
+    "steps": [
+      {"label": "固定工序", "detail": "每个人反复完成少数动作"},
+      {"label": "熟练度提高", "detail": "切换任务的时间和错误减少"},
+      {"label": "专用工具出现", "detail": "工具围绕单一工序继续优化"},
+      {"label": "单位时间产出上升", "detail": "同样时间完成更多产品"}
+    ],
+    "accentColor": "#4f8cff",
+    "backgroundColor": "#101521",
+    "textColor": "#ffffff",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "durationFrames": 150
+  },
+  "output": {"codec": "h264"}
+}
