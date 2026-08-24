@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shasitianshi-cloud/remotion/contracts/render-request-v1.schema.json",
+  "title": "Remotion Remote Render Request V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_id", "composition", "props", "output"],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "composition": {
+      "const": "ImageMotion"
+    },
+    "props": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["imageUrl", "motion", "backgroundColor", "width", "height", "fps", "durationFrames"],
+      "properties": {
+        "imageUrl": {"type": "string"},
+        "motion": {"enum": ["push-in", "pull-out", "pan-left", "pan-right", "none"]},
+        "backgroundColor": {"type": "string", "maxLength": 64},
+        "width": {"type": "integer", "minimum": 320, "maximum": 4096},
+        "height": {"type": "integer", "minimum": 240, "maximum": 4096},
+        "fps": {"type": "integer", "minimum": 1, "maximum": 60},
+        "durationFrames": {"type": "integer", "minimum": 1, "maximum": 18000}
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["codec"],
+      "properties": {
+        "codec": {"const": "h264"}
+      }
+    }
+  }
+}
