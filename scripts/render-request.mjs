@@ -32,32 +32,114 @@ if (typeof request.request_id !== 'string' || request.request_id.length < 1 || r
 if (expectedRequestId && expectedRequestId !== request.request_id) {
   fail(`REQUEST_ID_MISMATCH expected=${expectedRequestId} actual=${request.request_id}`);
 }
-if (request.composition !== 'ImageMotion') fail('UNSUPPORTED_COMPOSITION');
+
+const supportedCompositions = new Set([
+  'ImageMotion',
+  'TextHighlight',
+  'StatCounter',
+  'ComparisonChart',
+  'ProgressSteps'
+]);
+if (!supportedCompositions.has(request.composition)) fail('UNSUPPORTED_COMPOSITION');
 if (!request.props || typeof request.props !== 'object' || Array.isArray(request.props)) fail('INVALID_PROPS');
 
 const p = request.props;
-const ints = [
+const requireString = (key, max = 200, allowEmpty = true) => {
+  const value = p[key];
+  if (typeof value !== 'string' || value.length > max || (!allowEmpty && value.length === 0)) fail(`INVALID_${key.toUpperCase()}`);
+};
+const requireFiniteNumber = (key) => {
+  if (typeof p[key] !== 'number' || !Number.isFinite(p[key])) fail(`INVALID_${key.toUpperCase()}`);
+};
+const requireInt = (key, min, max) => {
+  if (!Number.isInteger(p[key]) || p[key] < min || p[key] > max) fail(`INVALID_${key.toUpperCase()}`);
+};
+
+for (const [key, min, max] of [
   ['width', 320, 4096],
   ['height', 240, 4096],
   ['fps', 1, 60],
   ['durationFrames', 1, 18000]
-];
-for (const [key, min, max] of ints) {
-  if (!Number.isInteger(p[key]) || p[key] < min || p[key] > max) fail(`INVALID_${key.toUpperCase()}`);
+]) {
+  requireInt(key, min, max);
 }
 
-const allowedMotion = new Set(['push-in', 'pull-out', 'pan-left', 'pan-right', 'none']);
-if (!allowedMotion.has(p.motion)) fail('INVALID_MOTION');
-if (typeof p.backgroundColor !== 'string' || p.backgroundColor.length > 64) fail('INVALID_BACKGROUND_COLOR');
-if (typeof p.imageUrl !== 'string') fail('INVALID_IMAGE_URL');
-if (p.imageUrl) {
-  let url;
-  try {
-    url = new URL(p.imageUrl);
-  } catch {
-    fail('INVALID_IMAGE_URL');
+const requireStyleStrings = () => {
+  requireString('backgroundColor', 64, false);
+  requireString('textColor', 64, false);
+};
+
+switch (request.composition) {
+  case 'ImageMotion': {
+    const allowedMotion = new Set(['push-in', 'pull-out', 'pan-left', 'pan-right', 'none']);
+    if (!allowedMotion.has(p.motion)) fail('INVALID_MOTION');
+    requireString('backgroundColor', 64, false);
+    requireString('imageUrl', 4096, true);
+    if (p.imageUrl) {
+      let url;
+      try {
+        url = new URL(p.imageUrl);
+      } catch {
+        fail('INVALID_IMAGE_URL');
+      }
+      if (url.protocol !== 'https:') fail('IMAGE_URL_MUST_USE_HTTPS');
+    }
+    break;
   }
-  if (url.protocol !== 'https:') fail('IMAGE_URL_MUST_USE_HTTPS');
+
+  case 'TextHighlight': {
+    requireString('title', 160, true);
+    requireString('highlightColor', 64, false);
+    requireStyleStrings();
+    requireInt('framesPerPhrase', 8, 180);
+    if (!Array.isArray(p.phrases) || p.phrases.length < 1 || p.phrases.length > 12) fail('INVALID_PHRASES');
+    if (p.phrases.some((item) => typeof item !== 'string' || item.length < 1 || item.length > 80)) fail('INVALID_PHRASES');
+    break;
+  }
+
+  case 'StatCounter': {
+    requireString('title', 160, true);
+    requireString('label', 160, true);
+    requireString('prefix', 16, true);
+    requireString('suffix', 16, true);
+    requireString('context', 200, true);
+    requireString('accentColor', 64, false);
+    requireStyleStrings();
+    requireFiniteNumber('from');
+    requireFiniteNumber('to');
+    requireInt('decimals', 0, 3);
+    break;
+  }
+
+  case 'ComparisonChart': {
+    requireString('title', 160, true);
+    requireString('leftLabel', 80, false);
+    requireString('rightLabel', 80, false);
+    requireString('unit', 16, true);
+    requireString('note', 200, true);
+    requireString('leftColor', 64, false);
+    requireString('rightColor', 64, false);
+    requireStyleStrings();
+    requireFiniteNumber('leftValue');
+    requireFiniteNumber('rightValue');
+    break;
+  }
+
+  case 'ProgressSteps': {
+    requireString('title', 160, true);
+    requireString('accentColor', 64, false);
+    requireStyleStrings();
+    if (!Array.isArray(p.steps) || p.steps.length < 2 || p.steps.length > 8) fail('INVALID_STEPS');
+    for (const step of p.steps) {
+      if (!step || typeof step !== 'object' || Array.isArray(step)) fail('INVALID_STEPS');
+      if (typeof step.label !== 'string' || step.label.length < 1 || step.label.length > 80) fail('INVALID_STEPS');
+      if (typeof step.detail !== 'string' || step.detail.length > 160) fail('INVALID_STEPS');
+    }
+    break;
+  }
+
+  default:
+    fail('UNSUPPORTED_COMPOSITION');
 }
 
 const codec = request.output?.codec ?? 'h264';
@@ -153,4 +235,4 @@ const evidence = {
 };
 
 writeFileSync(evidencePath, JSON.stringify(evidence, null, 2));
-console.log(`REMOTE_RENDER_SUCCESS request_id=${request.request_id} sha256=${outputSha256}`);
+console.log(`REMOTE_RENDER_SUCCESS request_id=${request.request_id} composition=${request.composition} sha256=${outputSha256}`);
