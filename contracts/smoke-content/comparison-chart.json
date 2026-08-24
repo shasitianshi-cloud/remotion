@@ -1,0 +1,22 @@
+{
+  "request_id": "content-smoke-comparison-chart-v1",
+  "composition": "ComparisonChart",
+  "props": {
+    "title": "同样 8 小时，不同组织方式",
+    "leftLabel": "一个人全流程",
+    "rightLabel": "多人专业分工",
+    "leftValue": 100,
+    "rightValue": 1000,
+    "unit": " 件",
+    "note": "示例数字仅用于验证比较场景的视觉结构。",
+    "leftColor": "#ef6b73",
+    "rightColor": "#4f8cff",
+    "backgroundColor": "#101521",
+    "textColor": "#ffffff",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "durationFrames": 120
+  },
+  "output": {"codec": "h264"}
+}
