@@ -1,0 +1,66 @@
+name: content-base-smoke
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'contracts/render-request-v2.schema.json'
+      - 'contracts/smoke-content/**'
+      - '.github/workflows/content-base-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: Smoke ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: TextHighlight
+            request: contracts/smoke-content/text-highlight.json
+          - name: StatCounter
+            request: contracts/smoke-content/stat-counter.json
+          - name: ComparisonChart
+            request: contracts/smoke-content/comparison-chart.json
+          - name: ProgressSteps
+            request: contracts/smoke-content/progress-steps.json
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Ensure ffprobe is available
+        shell: bash
+        run: |
+          if ! command -v ffprobe >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg
+          fi
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Render smoke
+        run: node scripts/render-request.mjs "${{ matrix.request }}"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-base-${{ matrix.name }}-${{ github.run_id }}
+          path: out/
+          if-no-files-found: warn
+          retention-days: 7
