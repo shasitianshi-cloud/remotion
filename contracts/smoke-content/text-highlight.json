@@ -1,0 +1,17 @@
+{
+  "request_id": "content-smoke-text-highlight-v1",
+  "composition": "TextHighlight",
+  "props": {
+    "title": "为什么国家不会因为钱变多就自动变富？",
+    "phrases": ["钱变多", "商品没变多", "真正变化的是价格"],
+    "framesPerPhrase": 24,
+    "highlightColor": "#4f8cff",
+    "backgroundColor": "#101521",
+    "textColor": "#ffffff",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "durationFrames": 96
+  },
+  "output": {"codec": "h264"}
+}
