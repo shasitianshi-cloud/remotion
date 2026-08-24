@@ -3,6 +3,7 @@ export function validateTimeline(r,media){
  if(!r||typeof r!=='object'||!r.request_id||!r.event_id)fail('INVALID_REQUEST');
  if(r.width!==1280||r.height!==720||r.fps!==30)fail('NON_CANONICAL_VIDEO_SPEC');
  if(!r.audio||!Array.isArray(r.visual_items)||!r.visual_items.length)fail('INVALID_MEDIA');
+ if(Object.hasOwn(r.audio,'speech_rate')&&r.audio.speech_rate!==10)fail('NON_CANONICAL_TTS_SPEECH_RATE');
  const sources=[r.audio,...r.visual_items];
  for(const x of sources){const s=x.source;if(!s||!['HTTPS_URL','GITHUB_ACTIONS_ARTIFACT'].includes(s.source_type))fail('UNSUPPORTED_SOURCE_TYPE');if(s.source_type==='HTTPS_URL'){let u;try{u=new URL(s.url)}catch{fail('INVALID_HTTPS_URL')}if(u.protocol!=='https:'||['localhost','127.0.0.1','::1'].includes(u.hostname))fail('INVALID_HTTPS_URL')}if(s.source_type==='GITHUB_ACTIONS_ARTIFACT'&&s.repository!=='shasitianshi-cloud/remotion')fail('INVALID_ARTIFACT_REPOSITORY')}
  const audio=media.audio;if(!audio||!Number.isFinite(audio.duration_seconds))fail('AUDIO_PROBE_MISSING');
