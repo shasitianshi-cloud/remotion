@@ -1,0 +1,22 @@
+{
+  "request_id": "content-smoke-stat-counter-v1",
+  "composition": "StatCounter",
+  "props": {
+    "title": "同样一天，产出可以差多少？",
+    "label": "每日产量",
+    "from": 100,
+    "to": 1000,
+    "decimals": 0,
+    "prefix": "",
+    "suffix": " 件",
+    "context": "数字只用于视觉验证，不代表真实统计数据。",
+    "accentColor": "#60a5fa",
+    "backgroundColor": "#101521",
+    "textColor": "#ffffff",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "durationFrames": 90
+  },
+  "output": {"codec": "h264"}
+}
