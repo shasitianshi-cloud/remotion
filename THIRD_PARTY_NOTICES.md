@@ -8,7 +8,22 @@ Architecture and usage were informed by public examples including:
 - Remotion AI video template: `remotion-dev/template-prompt-to-video`
 - CI render example: `Mason720/remotion`
 
-No source code from those repositories is vendored here.
+No source code from the repositories above is vendored here.
+
+## React Video Editor Remotion Templates
+
+Runtime V2 content compositions adapt implementation patterns from:
+
+- Repository: `reactvideoeditor/remotion-templates`
+- Source commit: `6209b724798e48ff395f8df1a6fa2d26082372b5`
+- License: MIT
+- Source templates:
+  - `templates/text-highlight.tsx`
+  - `templates/stat-counter.tsx`
+  - `templates/comparison-chart.tsx`
+  - `templates/progress-steps.tsx`
+
+The local versions are parameterized adaptations for the remote request contract rather than byte-for-byte copies. Attribution comments are retained in each adapted composition.
 
 ## Remotion
 
