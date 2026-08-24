@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {z} from 'zod';
+import {contentFontFamily} from '../fonts';
 
 // Adapted from reactvideoeditor/remotion-templates templates/progress-steps.tsx
 // Source commit: 6209b724798e48ff395f8df1a6fa2d26082372b5 (MIT)
@@ -40,12 +41,12 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
       style={{
         background: `linear-gradient(160deg, ${backgroundColor}, #0b1020)`,
         color: textColor,
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: contentFontFamily,
         padding: '7% 8%',
         boxSizing: 'border-box'
       }}
     >
-      <div style={{fontSize: 50, fontWeight: 780, textAlign: 'center', marginBottom: 90}}>{title}</div>
+      <div style={{fontSize: 50, fontWeight: 800, textAlign: 'center', marginBottom: 90}}>{title}</div>
       <div style={{display: 'flex', alignItems: 'flex-start', justifyContent: 'center', width: '100%'}}>
         {steps.map((step, index) => {
           const start = index * framesPerStep;
@@ -86,9 +87,9 @@ export const ProgressSteps: React.FC<ProgressStepsProps> = ({
                 >
                   {index + 1}
                 </div>
-                <div style={{fontSize: 28, fontWeight: 720, marginTop: 22, opacity: Math.max(0.25, enter)}}>{step.label}</div>
+                <div style={{fontSize: 28, fontWeight: 700, marginTop: 22, opacity: Math.max(0.25, enter)}}>{step.label}</div>
                 {step.detail ? (
-                  <div style={{fontSize: 21, lineHeight: 1.45, opacity: enter * 0.58, marginTop: 12}}>{step.detail}</div>
+                  <div style={{fontSize: 21, lineHeight: 1.45, opacity: enter * 0.58, marginTop: 12, fontWeight: 400}}>{step.detail}</div>
                 ) : null}
               </div>
               {index < steps.length - 1 ? (
