@@ -1,0 +1,30 @@
+{
+  "verification_id": "REMOTE_REMOTION_SMOKE_V1",
+  "verified": true,
+  "workflow_run_id": 32682007088,
+  "workflow_job_id": 97300185369,
+  "workflow_artifact_id": 9504437740,
+  "pull_request": 1,
+  "tested_head_sha": "5af0114dcff0fb5a389a7fa01e2c0aa72023db87",
+  "evidence_source_commit": "c56c8ed8d3332cb6d7eedb3aa6067fd1c03b14ee",
+  "merged_main_sha": "77de414e352d2ae9f76a13611a16f7c0a9423222",
+  "request_id": "smoke-image-motion-v1",
+  "request_sha256": "2eebe3e5cbbb3b0eeb76b622193f48ea4d85ac1b7a0fd47879ec986236747e75",
+  "output_sha256": "af7de3e698d3173870b5e3f490a6d05728d31f8b1e87d051decb2057d8f1ed10",
+  "output_size_bytes": 163329,
+  "codec": "h264",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "duration_seconds": 3.050667,
+  "remote_render": true,
+  "local_render": false,
+  "gates": {
+    "dependency_install": "PASS",
+    "request_verification": "PASS",
+    "typecheck": "PASS",
+    "remotion_render": "PASS",
+    "ffprobe_verification": "PASS",
+    "artifact_upload": "PASS"
+  }
+}
