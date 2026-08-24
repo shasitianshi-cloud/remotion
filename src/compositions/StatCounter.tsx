@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {z} from 'zod';
+import {contentFontFamily} from '../fonts';
 
 // Adapted from reactvideoeditor/remotion-templates templates/stat-counter.tsx
 // Source commit: 6209b724798e48ff395f8df1a6fa2d26082372b5 (MIT)
@@ -59,7 +60,7 @@ export const StatCounter: React.FC<StatCounterProps> = ({
       style={{
         background: `radial-gradient(circle at 50% 42%, ${accentColor}22, transparent 42%), ${backgroundColor}`,
         color: textColor,
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: contentFontFamily,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -68,13 +69,13 @@ export const StatCounter: React.FC<StatCounterProps> = ({
       }}
     >
       <div style={{textAlign: 'center', transform: `scale(${0.88 + entrance * 0.12})`, maxWidth: 1500}}>
-        {title ? <div style={{fontSize: 34, fontWeight: 650, opacity: 0.68, marginBottom: 28}}>{title}</div> : null}
+        {title ? <div style={{fontSize: 34, fontWeight: 700, opacity: 0.68, marginBottom: 28}}>{title}</div> : null}
         <div style={{fontSize: 142, lineHeight: 1, fontWeight: 800, letterSpacing: -5, color: accentColor}}>
           {prefix}{formatted}{suffix}
         </div>
         {label ? <div style={{fontSize: 48, fontWeight: 700, marginTop: 24}}>{label}</div> : null}
         {context ? (
-          <div style={{fontSize: 30, opacity: contextOpacity * 0.7, marginTop: 20, lineHeight: 1.45}}>{context}</div>
+          <div style={{fontSize: 30, opacity: contextOpacity * 0.7, marginTop: 20, lineHeight: 1.45, fontWeight: 400}}>{context}</div>
         ) : null}
       </div>
     </AbsoluteFill>
