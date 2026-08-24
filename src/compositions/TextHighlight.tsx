@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
 import {z} from 'zod';
+import {contentFontFamily} from '../fonts';
 
 // Adapted from reactvideoeditor/remotion-templates templates/text-highlight.tsx
 // Source commit: 6209b724798e48ff395f8df1a6fa2d26082372b5 (MIT)
@@ -36,7 +37,7 @@ export const TextHighlight: React.FC<TextHighlightProps> = ({
       style={{
         background: `linear-gradient(160deg, ${backgroundColor}, #0b1020)`,
         color: textColor,
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: contentFontFamily,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -49,7 +50,7 @@ export const TextHighlight: React.FC<TextHighlightProps> = ({
           <div
             style={{
               fontSize: 30,
-              fontWeight: 600,
+              fontWeight: 700,
               opacity: 0.62,
               marginBottom: 34,
               letterSpacing: 1
@@ -79,7 +80,7 @@ export const TextHighlight: React.FC<TextHighlightProps> = ({
                   display: 'inline-block',
                   padding: '7px 13px',
                   fontSize,
-                  fontWeight: 750,
+                  fontWeight: 800,
                   letterSpacing: -1.2,
                   opacity: Math.max(0.22, dim),
                   transform: `translateY(${(1 - enter) * 18}px)`
