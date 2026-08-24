@@ -1,0 +1,27 @@
+{
+  "name": "remote-remotion-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Minimal Remotion runtime for remote GitHub Actions rendering",
+  "scripts": {
+    "dev": "remotion studio src/index.ts",
+    "build": "remotion bundle src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "render:request": "node scripts/render-request.mjs",
+    "render:smoke": "node scripts/render-request.mjs contracts/smoke-request.json"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.514",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.514",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
