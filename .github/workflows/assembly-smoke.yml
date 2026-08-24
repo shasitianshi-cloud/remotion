@@ -1,5 +1,8 @@
 name: Timeline assembly smoke
-on: {workflow_dispatch: {}}
+on:
+  workflow_dispatch:
+  push:
+    branches: [runtime-v3-timeline-assembly]
 permissions: {contents: read}
 jobs:
   smoke:
