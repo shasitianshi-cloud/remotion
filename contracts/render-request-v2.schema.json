@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shasitianshi-cloud/remotion/contracts/render-request-v2.schema.json",
+  "title": "Remotion Remote Render Request V2",
+  "oneOf": [
+    {"$ref": "#/$defs/imageMotionRequest"},
+    {"$ref": "#/$defs/textHighlightRequest"},
+    {"$ref": "#/$defs/statCounterRequest"},
+    {"$ref": "#/$defs/comparisonChartRequest"},
+    {"$ref": "#/$defs/progressStepsRequest"}
+  ],
+  "$defs": {
+    "baseOutput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["codec"],
+      "properties": {"codec": {"const": "h264"}}
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "baseVideoProps": {
+      "type": "object",
+      "properties": {
+        "width": {"type": "integer", "minimum": 320, "maximum": 4096},
+        "height": {"type": "integer", "minimum": 240, "maximum": 4096},
+        "fps": {"type": "integer", "minimum": 1, "maximum": 60},
+        "durationFrames": {"type": "integer", "minimum": 1, "maximum": 18000}
+      },
+      "required": ["width", "height", "fps", "durationFrames"]
+    },
+    "imageMotionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_id", "composition", "props", "output"],
+      "properties": {
+        "request_id": {"$ref": "#/$defs/requestId"},
+        "composition": {"const": "ImageMotion"},
+        "props": {
+          "allOf": [
+            {"$ref": "#/$defs/baseVideoProps"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["imageUrl", "motion", "backgroundColor", "width", "height", "fps", "durationFrames"],
+              "properties": {
+                "imageUrl": {"type": "string"},
+                "motion": {"enum": ["push-in", "pull-out", "pan-left", "pan-right", "none"]},
+                "backgroundColor": {"type": "string", "maxLength": 64},
+                "width": {"type": "integer", "minimum": 320, "maximum": 4096},
+                "height": {"type": "integer", "minimum": 240, "maximum": 4096},
+                "fps": {"type": "integer", "minimum": 1, "maximum": 60},
+                "durationFrames": {"type": "integer", "minimum": 1, "maximum": 18000}
+              }
+            }
+          ]
+        },
+        "output": {"$ref": "#/$defs/baseOutput"}
+      }
+    },
+    "textHighlightRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_id", "composition", "props", "output"],
+      "properties": {
+        "request_id": {"$ref": "#/$defs/requestId"},
+        "composition": {"const": "TextHighlight"},
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "phrases", "framesPerPhrase", "highlightColor", "backgroundColor", "textColor", "width", "height", "fps", "durationFrames"],
+          "properties": {
+            "title": {"type": "string", "maxLength": 160},
+            "phrases": {"type": "array", "minItems": 1, "maxItems": 12, "items": {"type": "string", "minLength": 1, "maxLength": 80}},
+            "framesPerPhrase": {"type": "integer", "minimum": 8, "maximum": 180},
+            "highlightColor": {"type": "string", "maxLength": 64},
+            "backgroundColor": {"type": "string", "maxLength": 64},
+            "textColor": {"type": "string", "maxLength": 64},
+            "width": {"type": "integer", "minimum": 320, "maximum": 4096},
+            "height": {"type": "integer", "minimum": 240, "maximum": 4096},
+            "fps": {"type": "integer", "minimum": 1, "maximum": 60},
+            "durationFrames": {"type": "integer", "minimum": 1, "maximum": 18000}
+          }
+        },
+        "output": {"$ref": "#/$defs/baseOutput"}
+      }
+    },
+    "statCounterRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_id", "composition", "props", "output"],
+      "properties": {
+        "request_id": {"$ref": "#/$defs/requestId"},
+        "composition": {"const": "StatCounter"},
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "label", "from", "to", "decimals", "prefix", "suffix", "context", "accentColor", "backgroundColor", "textColor", "width", "height", "fps", "durationFrames"],
+          "properties": {
+            "title": {"type": "string", "maxLength": 160},
+            "label": {"type": "string", "maxLength": 160},
+            "from": {"type": "number"},
+            "to": {"type": "number"},
+            "decimals": {"type": "integer", "minimum": 0, "maximum": 3},
+            "prefix": {"type": "string", "maxLength": 16},
+            "suffix": {"type": "string", "maxLength": 16},
+            "context": {"type": "string", "maxLength": 200},
+            "accentColor": {"type": "string", "maxLength": 64},
+            "backgroundColor": {"type": "string", "maxLength": 64},
+            "textColor": {"type": "string", "maxLength": 64},
+            "width": {"type": "integer", "minimum": 320, "maximum": 4096},
+            "height": {"type": "integer", "minimum": 240, "maximum": 4096},
+            "fps": {"type": "integer", "minimum": 1, "maximum": 60},
+            "durationFrames": {"type": "integer", "minimum": 1, "maximum": 18000}
+          }
+        },
+        "output": {"$ref": "#/$defs/baseOutput"}
+      }
+    },
+    "comparisonChartRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_id", "composition", "props", "output"],
+      "properties": {
+        "request_id": {"$ref": "#/$defs/requestId"},
+        "composition": {"const": "ComparisonChart"},
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "leftLabel", "rightLabel", "leftValue", "rightValue", "unit", "note", "leftColor", "rightColor", "backgroundColor", "textColor", "width", "height", "fps", "durationFrames"],
+          "properties": {
+            "title": {"type": "string", "maxLength": 160},
+            "leftLabel": {"type": "string", "minLength": 1, "maxLength": 80},
+            "rightLabel": {"type": "string", "minLength": 1, "maxLength": 80},
+            "leftValue": {"type": "number"},
+            "rightValue": {"type": "number"},
+            "unit": {"type": "string", "maxLength": 16},
+            "note": {"type": "string", "maxLength": 200},
+            "leftColor": {"type": "string", "maxLength": 64},
+            "rightColor": {"type": "string", "maxLength": 64},
+            "backgroundColor": {"type": "string", "maxLength": 64},
+            "textColor": {"type": "string", "maxLength": 64},
+            "width": {"type": "integer", "minimum": 320, "maximum": 4096},
+            "height": {"type": "integer", "minimum": 240, "maximum": 4096},
+            "fps": {"type": "integer", "minimum": 1, "maximum": 60},
+            "durationFrames": {"type": "integer", "minimum": 1, "maximum": 18000}
+          }
+        },
+        "output": {"$ref": "#/$defs/baseOutput"}
+      }
+    },
+    "progressStepsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_id", "composition", "props", "output"],
+      "properties": {
+        "request_id": {"$ref": "#/$defs/requestId"},
+        "composition": {"const": "ProgressSteps"},
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title", "steps", "accentColor", "backgroundColor", "textColor", "width", "height", "fps", "durationFrames"],
+          "properties": {
+            "title": {"type": "string", "maxLength": 160},
+            "steps": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["label", "detail"],
+                "properties": {
+                  "label": {"type": "string", "minLength": 1, "maxLength": 80},
+                  "detail": {"type": "string", "maxLength": 160}
+                }
+              }
+            },
+            "accentColor": {"type": "string", "maxLength": 64},
+            "backgroundColor": {"type": "string", "maxLength": 64},
+            "textColor": {"type": "string", "maxLength": 64},
+            "width": {"type": "integer", "minimum": 320, "maximum": 4096},
+            "height": {"type": "integer", "minimum": 240, "maximum": 4096},
+            "fps": {"type": "integer", "minimum": 1, "maximum": 60},
+            "durationFrames": {"type": "integer", "minimum": 1, "maximum": 18000}
+          }
+        },
+        "output": {"$ref": "#/$defs/baseOutput"}
+      }
+    }
+  }
+}
