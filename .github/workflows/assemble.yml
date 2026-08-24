@@ -6,9 +6,12 @@ on:
       request_id: {required: true, type: string}
       request_b64: {required: true, type: string}
       request_sha256: {required: true, type: string}
+  push:
+    branches: [runtime-v3-timeline-assembly]
 permissions: {contents: read, actions: read}
 jobs:
   assemble:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
