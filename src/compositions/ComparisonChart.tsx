@@ -46,9 +46,12 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   textColor
 }) => {
   const frame = useCurrentFrame();
-  const {durationInFrames} = useVideoConfig();
+  const {durationInFrames, height} = useVideoConfig();
   const maxMagnitude = Math.max(1, Math.abs(leftValue), Math.abs(rightValue));
-  const maxBarHeight = 380;
+  const maxBarHeight = Math.min(320, Math.round(height * 0.34));
+  const valueFontSize = Math.max(42, Math.min(62, Math.round(height * 0.075)));
+  const labelFontSize = Math.max(24, Math.min(32, Math.round(height * 0.04)));
+
   const leftProgress = interpolate(frame, [8, Math.min(48, durationInFrames - 1)], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp'
@@ -66,13 +69,24 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
     const barHeight = (Math.abs(value) / maxMagnitude) * maxBarHeight * progress;
     const displayedValue = value * progress;
     return (
-      <div style={{flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end'}}>
-        <div style={{fontSize: 62, fontWeight: 800, color, marginBottom: 18, letterSpacing: -2}}>
+      <div style={{flex: 1, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end'}}>
+        <div
+          style={{
+            fontSize: valueFontSize,
+            fontWeight: 800,
+            color,
+            marginBottom: 14,
+            letterSpacing: -1.5,
+            minHeight: valueFontSize * 1.12,
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
           {formatValue(displayedValue)}{unit}
         </div>
         <div
           style={{
-            width: 190,
+            width: Math.max(130, Math.min(190, Math.round(height * 0.22))),
             height: barHeight,
             minHeight: 3,
             background: `linear-gradient(180deg, ${color}, ${color}99)`,
@@ -80,7 +94,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
             boxShadow: `0 18px 40px ${color}25`
           }}
         />
-        <div style={{fontSize: 32, fontWeight: 700, marginTop: 20, opacity: 0.88}}>{label}</div>
+        <div style={{fontSize: labelFontSize, fontWeight: 700, marginTop: 16, opacity: 0.88, minHeight: labelFontSize * 1.3}}>{label}</div>
       </div>
     );
   };
@@ -91,18 +105,18 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
         background: `linear-gradient(155deg, ${backgroundColor}, #0b1020)`,
         color: textColor,
         fontFamily: contentFontFamily,
-        padding: '6% 9%',
+        padding: '5.5% 9% 4.5%',
         boxSizing: 'border-box'
       }}
     >
-      <div style={{fontSize: 48, fontWeight: 800, textAlign: 'center', marginBottom: 42}}>{title}</div>
-      <div style={{flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 90, minHeight: 0}}>
+      <div style={{fontSize: Math.max(38, Math.min(48, Math.round(height * 0.06))), fontWeight: 800, textAlign: 'center', marginBottom: 24, lineHeight: 1.25}}>{title}</div>
+      <div style={{flex: 1, display: 'flex', alignItems: 'stretch', justifyContent: 'center', gap: 72, minHeight: 0, overflow: 'hidden'}}>
         {renderSide(leftLabel, leftValue, leftColor, leftProgress)}
-        <div style={{height: '82%', width: 2, backgroundColor: '#ffffff22', alignSelf: 'center'}} />
+        <div style={{height: '78%', width: 2, backgroundColor: '#ffffff22', alignSelf: 'center'}} />
         {renderSide(rightLabel, rightValue, rightColor, rightProgress)}
       </div>
       {note ? (
-        <div style={{fontSize: 28, lineHeight: 1.4, textAlign: 'center', opacity: noteOpacity * 0.68, marginTop: 28, fontWeight: 400}}>{note}</div>
+        <div style={{fontSize: Math.max(22, Math.min(28, Math.round(height * 0.032))), lineHeight: 1.35, textAlign: 'center', opacity: noteOpacity * 0.68, marginTop: 16, fontWeight: 400}}>{note}</div>
       ) : null}
     </AbsoluteFill>
   );
