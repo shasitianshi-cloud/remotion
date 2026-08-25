@@ -82,6 +82,7 @@ switch (request.composition) {
     if (p.textAlign !== 'center' || typeof p.lineHeight !== 'number' || p.lineHeight < 1 || p.lineHeight > 1.6) fail('INVALID_CAPTION_STYLE');
     if (typeof p.maxWidth !== 'number' || p.maxWidth > p.width - 128 || p.maxWidth < 300) fail('CAPTION_LAYOUT_OVERFLOW');
     if (p.baseVideoUrl && (!p.baseVideoUrl.startsWith('https://'))) fail('BASE_VIDEO_URL_MUST_USE_HTTPS');
+    if (p.baseVideoUrl && p.sourceVideoMuted !== true) fail('NARRATION_SOURCE_VIDEO_MUTE_REQUIRED');
     if (!Array.isArray(p.segments)) fail('INVALID_CAPTION_SEGMENTS');
     let priorEnd = 0;
     for (const s of p.segments) {
@@ -247,6 +248,10 @@ const probeJson = JSON.parse(probe.stdout);
 const stream = probeJson.streams?.[0];
 const format = probeJson.format ?? {};
 if (!stream) fail('VIDEO_STREAM_MISSING');
+const audioProbe = spawnSync('ffprobe', ['-v','error','-select_streams','a','-show_entries','stream=index','-of','json',outputPath], {encoding:'utf8'});
+if (audioProbe.status !== 0) fail('AUDIO_STREAM_PROBE_FAILED');
+const sourceAudioInRenderMix = (JSON.parse(audioProbe.stdout).streams ?? []).length > 0;
+if (p.baseVideoUrl && p.sourceVideoMuted === true && sourceAudioInRenderMix) fail('SOURCE_VIDEO_AUDIO_IN_RENDER_MIX');
 
 const outputBytes = readFileSync(outputPath);
 const outputSha256 = createHash('sha256').update(outputBytes).digest('hex');
@@ -274,7 +279,9 @@ const evidence = {
   height: stream.height,
   r_frame_rate: stream.r_frame_rate,
   duration_seconds: Number(format.duration),
-  format_size_bytes: Number(format.size)
+  format_size_bytes: Number(format.size),
+  source_video_audio_policy: p.baseVideoUrl ? 'MUTE' : 'NOT_APPLICABLE',
+  source_audio_in_render_mix: sourceAudioInRenderMix
   ,frame_checkpoints: frameCheckpoints
   ,frame_checkpoint_distinct_count: new Set(frameCheckpoints.map(x=>x.sha256)).size
 };
