@@ -108,7 +108,10 @@ def download_artifact(repo: str, run_id: int, destination: Path) -> None:
     req = urllib.request.Request(artifact["archive_download_url"])
     req.add_header("Authorization", f"Bearer {token()}")
     req.add_header("Accept", "application/vnd.github+json")
-    with urllib.request.urlopen(req, timeout=120) as response:
+    class StripAuthOnRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, original, fp, code, msg, headers, newurl):
+            return urllib.request.Request(newurl, method="GET")
+    with urllib.request.build_opener(StripAuthOnRedirect).open(req, timeout=120) as response:
         destination.write_bytes(response.read())
     print(f"ARTIFACT_DOWNLOADED id={artifact['id']} path={destination}")
 

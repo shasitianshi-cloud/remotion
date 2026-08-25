@@ -90,7 +90,7 @@ switch (request.composition) {
       if (s.start_frame < priorEnd) fail('OVERLAPPING_TIMING');
       if (s.end_frame_exclusive > p.durationFrames) fail('OUT_OF_VIDEO_RANGE');
       if (!Array.isArray(s.lines) || s.lines.length < 1 || s.lines.length > 2 || s.lines.some(x=>typeof x !== 'string' || !x.trim())) fail('THREE_LINE_LAYOUT');
-      if (s.lines.join('') !== s.text.replace(/\s+/g,'')) fail('NON_VERBATIM_CAPTION');
+      if (s.lines.join('').replace(/\s+/g,'') !== s.text.replace(/\s+/g,'')) fail('NON_VERBATIM_CAPTION');
       priorEnd = s.end_frame_exclusive;
     }
     break;
