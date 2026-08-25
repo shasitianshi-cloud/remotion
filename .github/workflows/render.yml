@@ -17,7 +17,7 @@ on:
         required: true
         type: string
   push:
-    branches: [main]
+    branches: [main, runtime-v4-visual-primitives]
     paths:
       - '.github/workflows/render.yml'
       - 'package.json'
@@ -96,6 +96,9 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+
+      - name: Primitive negative tests
+        run: node scripts/primitive-negative-tests.mjs
 
       - name: Render and verify
         env:

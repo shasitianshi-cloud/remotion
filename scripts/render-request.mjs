@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 import {mkdirSync, readFileSync, writeFileSync, copyFileSync, statSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {validatePrimitive} from './primitive-validation.mjs';
 
 const fail = (message) => {
   console.error(message);
@@ -39,11 +40,13 @@ const supportedCompositions = new Set([
   'StatCounter',
   'ComparisonChart',
   'ProgressSteps'
+  ,'PAN_ZOOM_FOCUS','CALLOUT','REGION_HIGHLIGHT','PATH_TRACE','SPLIT_COMPARE','IMAGE_SEQUENCE','DOCUMENT_FOCUS','LABEL_ANCHOR'
 ]);
 if (!supportedCompositions.has(request.composition)) fail('UNSUPPORTED_COMPOSITION');
 if (!request.props || typeof request.props !== 'object' || Array.isArray(request.props)) fail('INVALID_PROPS');
 
 const p = request.props;
+if (request.composition.includes('_')) {try {validatePrimitive(request.composition,p)} catch(e) {fail(e.message)}}
 const requireString = (key, max = 200, allowEmpty = true) => {
   const value = p[key];
   if (typeof value !== 'string' || value.length > max || (!allowEmpty && value.length === 0)) fail(`INVALID_${key.toUpperCase()}`);

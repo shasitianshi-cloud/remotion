@@ -5,10 +5,12 @@ import {TextHighlight, textHighlightSchema} from './compositions/TextHighlight';
 import {StatCounter, statCounterSchema} from './compositions/StatCounter';
 import {ComparisonChart, comparisonChartSchema} from './compositions/ComparisonChart';
 import {ProgressSteps, progressStepsSchema} from './compositions/ProgressSteps';
+import {PanZoomFocus,panZoomFocusSchema,Callout,calloutSchema,RegionHighlight,regionHighlightSchema,PathTrace,pathTraceSchema,SplitCompare,splitCompareSchema,ImageSequence,imageSequenceSchema,DocumentFocus,documentFocusSchema,LabelAnchor,labelAnchorSchema} from './compositions/VisualPrimitives';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {[["PAN_ZOOM_FOCUS",PanZoomFocus,panZoomFocusSchema],["CALLOUT",Callout,calloutSchema],["REGION_HIGHLIGHT",RegionHighlight,regionHighlightSchema],["PATH_TRACE",PathTrace,pathTraceSchema],["SPLIT_COMPARE",SplitCompare,splitCompareSchema],["IMAGE_SEQUENCE",ImageSequence,imageSequenceSchema],["DOCUMENT_FOCUS",DocumentFocus,documentFocusSchema],["LABEL_ANCHOR",LabelAnchor,labelAnchorSchema]].map(([id,component,schema])=><Composition key={id as string} id={id as string} component={component as any} schema={schema as any} durationInFrames={90} fps={30} width={1280} height={720} defaultProps={{} as any} calculateMetadata={({props}:any)=>({durationInFrames:props.durationFrames,fps:props.fps,width:props.width,height:props.height})}/>)}
       <Composition
         id="ImageMotion"
         component={ImageMotion}
