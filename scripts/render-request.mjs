@@ -229,6 +229,15 @@ if (!stream) fail('VIDEO_STREAM_MISSING');
 const outputBytes = readFileSync(outputPath);
 const outputSha256 = createHash('sha256').update(outputBytes).digest('hex');
 const size = statSync(outputPath).size;
+const checkpointFrames = [0, Math.floor((p.durationFrames - 1) / 2), p.durationFrames - 1];
+const frameCheckpoints = [];
+for (const frame of checkpointFrames) {
+  const path = resolve(`out/frame-${frame}.png`);
+  const shot = spawnSync('ffmpeg', ['-v','error','-i',outputPath,'-vf',`select=eq(n\\,${frame})`,'-vframes','1',path], {encoding:'utf8'});
+  if (shot.status !== 0 || !statSync(path).size) fail(`FRAME_CHECKPOINT_FAILED_${frame}`);
+  const bytes = readFileSync(path);
+  frameCheckpoints.push({frame,sha256:createHash('sha256').update(bytes).digest('hex'),size_bytes:bytes.length});
+}
 
 const evidence = {
   ...baseEvidence,
@@ -244,6 +253,8 @@ const evidence = {
   r_frame_rate: stream.r_frame_rate,
   duration_seconds: Number(format.duration),
   format_size_bytes: Number(format.size)
+  ,frame_checkpoints: frameCheckpoints
+  ,frame_checkpoint_distinct_count: new Set(frameCheckpoints.map(x=>x.sha256)).size
 };
 
 writeFileSync(evidencePath, JSON.stringify(evidence, null, 2));
