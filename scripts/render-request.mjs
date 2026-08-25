@@ -73,6 +73,15 @@ const requireStyleStrings = () => {
 };
 
 switch (request.composition) {
+  case 'PAN_ZOOM_FOCUS':
+  case 'CALLOUT':
+  case 'REGION_HIGHLIGHT':
+  case 'PATH_TRACE':
+  case 'SPLIT_COMPARE':
+  case 'IMAGE_SEQUENCE':
+  case 'DOCUMENT_FOCUS':
+  case 'LABEL_ANCHOR':
+    break;
   case 'ImageMotion': {
     const allowedMotion = new Set(['push-in', 'pull-out', 'pan-left', 'pan-right', 'none']);
     if (!allowedMotion.has(p.motion)) fail('INVALID_MOTION');
