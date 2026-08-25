@@ -250,7 +250,11 @@ const format = probeJson.format ?? {};
 if (!stream) fail('VIDEO_STREAM_MISSING');
 const audioProbe = spawnSync('ffprobe', ['-v','error','-select_streams','a','-show_entries','stream=index','-of','json',outputPath], {encoding:'utf8'});
 if (audioProbe.status !== 0) fail('AUDIO_STREAM_PROBE_FAILED');
-const sourceAudioInRenderMix = (JSON.parse(audioProbe.stdout).streams ?? []).length > 0;
+const audioStreamPresent = (JSON.parse(audioProbe.stdout).streams ?? []).length > 0;
+const volumeProbe = audioStreamPresent ? spawnSync('ffmpeg', ['-hide_banner','-i',outputPath,'-af','volumedetect','-f','null','-'], {encoding:'utf8'}) : null;
+if (volumeProbe && volumeProbe.status !== 0) fail('AUDIO_VOLUME_PROBE_FAILED');
+const audioMixSilent = !audioStreamPresent || /mean_volume:\s*-inf dB/.test(volumeProbe?.stderr ?? '');
+const sourceAudioInRenderMix = audioStreamPresent && !audioMixSilent;
 if (p.baseVideoUrl && p.sourceVideoMuted === true && sourceAudioInRenderMix) fail('SOURCE_VIDEO_AUDIO_IN_RENDER_MIX');
 
 const outputBytes = readFileSync(outputPath);
@@ -281,6 +285,8 @@ const evidence = {
   duration_seconds: Number(format.duration),
   format_size_bytes: Number(format.size),
   source_video_audio_policy: p.baseVideoUrl ? 'MUTE' : 'NOT_APPLICABLE',
+  source_audio_stream_present: audioStreamPresent,
+  source_audio_mix_silent: audioMixSilent,
   source_audio_in_render_mix: sourceAudioInRenderMix
   ,frame_checkpoints: frameCheckpoints
   ,frame_checkpoint_distinct_count: new Set(frameCheckpoints.map(x=>x.sha256)).size
