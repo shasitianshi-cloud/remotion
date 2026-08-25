@@ -253,7 +253,9 @@ if (audioProbe.status !== 0) fail('AUDIO_STREAM_PROBE_FAILED');
 const audioStreamPresent = (JSON.parse(audioProbe.stdout).streams ?? []).length > 0;
 const volumeProbe = audioStreamPresent ? spawnSync('ffmpeg', ['-hide_banner','-i',outputPath,'-af','volumedetect','-f','null','-'], {encoding:'utf8'}) : null;
 if (volumeProbe && volumeProbe.status !== 0) fail('AUDIO_VOLUME_PROBE_FAILED');
-const audioMixSilent = !audioStreamPresent || /mean_volume:\s*-inf dB/.test(volumeProbe?.stderr ?? '');
+const meanMatch = /mean_volume:\s*(-inf|[-\d.]+) dB/.exec(volumeProbe?.stderr ?? '');
+const meanVolumeDb = !audioStreamPresent || meanMatch?.[1] === '-inf' ? null : Number(meanMatch?.[1]);
+const audioMixSilent = !audioStreamPresent || meanMatch?.[1] === '-inf' || (Number.isFinite(meanVolumeDb) && meanVolumeDb <= -80);
 const sourceAudioInRenderMix = audioStreamPresent && !audioMixSilent;
 if (p.baseVideoUrl && p.sourceVideoMuted === true && sourceAudioInRenderMix) fail('SOURCE_VIDEO_AUDIO_IN_RENDER_MIX');
 
@@ -286,6 +288,7 @@ const evidence = {
   format_size_bytes: Number(format.size),
   source_video_audio_policy: p.baseVideoUrl ? 'MUTE' : 'NOT_APPLICABLE',
   source_audio_stream_present: audioStreamPresent,
+  source_audio_mean_volume_db: meanVolumeDb,
   source_audio_mix_silent: audioMixSilent,
   source_audio_in_render_mix: sourceAudioInRenderMix
   ,frame_checkpoints: frameCheckpoints
