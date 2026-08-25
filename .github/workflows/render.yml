@@ -17,7 +17,7 @@ on:
         required: true
         type: string
   push:
-    branches: [main, runtime-v4-visual-primitives]
+    branches: [main, runtime-v4-visual-primitives, runtime-v5-caption-layer]
     paths:
       - '.github/workflows/render.yml'
       - 'package.json'
@@ -99,6 +99,9 @@ jobs:
 
       - name: Primitive negative tests
         run: node scripts/primitive-negative-tests.mjs
+
+      - name: Caption negative tests
+        run: node scripts/caption-negative-tests.mjs
 
       - name: Render and verify
         env:

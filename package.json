@@ -8,7 +8,8 @@
     "build": "remotion bundle src/index.ts",
     "typecheck": "tsc --noEmit",
     "render:request": "node scripts/render-request.mjs",
-    "render:smoke": "node scripts/render-request.mjs contracts/smoke-request.json"
+    "render:smoke": "node scripts/render-request.mjs contracts/smoke-request.json",
+    "test:caption": "node scripts/caption-negative-tests.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.514",

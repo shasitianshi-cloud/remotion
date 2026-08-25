@@ -41,6 +41,7 @@ const supportedCompositions = new Set([
   'ComparisonChart',
   'ProgressSteps'
   ,'PAN_ZOOM_FOCUS','CALLOUT','REGION_HIGHLIGHT','PATH_TRACE','SPLIT_COMPARE','IMAGE_SEQUENCE','DOCUMENT_FOCUS','LABEL_ANCHOR'
+  ,'CAPTION_LAYER'
 ]);
 if (!supportedCompositions.has(request.composition)) fail('UNSUPPORTED_COMPOSITION');
 if (!request.props || typeof request.props !== 'object' || Array.isArray(request.props)) fail('INVALID_PROPS');
@@ -73,6 +74,27 @@ const requireStyleStrings = () => {
 };
 
 switch (request.composition) {
+  case 'CAPTION_LAYER': {
+    if (p.width !== 1280 || p.height !== 720 || p.fps !== 30) fail('CAPTION_CANONICAL_SPEC_REQUIRED');
+    requireString('backgroundColor',64,false); requireString('textColor',64,false); requireString('plateColor',64,false);
+    requireInt('fontSize',24,72); requireInt('bottomOffset',24,180);
+    if (!['400','700','800'].includes(p.fontWeight)) fail('UNSUPPORTED_LANGUAGE_FONT');
+    if (p.textAlign !== 'center' || typeof p.lineHeight !== 'number' || p.lineHeight < 1 || p.lineHeight > 1.6) fail('INVALID_CAPTION_STYLE');
+    if (typeof p.maxWidth !== 'number' || p.maxWidth > p.width - 128 || p.maxWidth < 300) fail('CAPTION_LAYOUT_OVERFLOW');
+    if (p.baseVideoUrl && (!p.baseVideoUrl.startsWith('https://'))) fail('BASE_VIDEO_URL_MUST_USE_HTTPS');
+    if (!Array.isArray(p.segments)) fail('INVALID_CAPTION_SEGMENTS');
+    let priorEnd = 0;
+    for (const s of p.segments) {
+      if (!s || typeof s.caption_id !== 'string' || typeof s.text !== 'string' || !s.text.trim()) fail('EMPTY_CAPTION_TEXT');
+      if (!Number.isInteger(s.start_frame) || !Number.isInteger(s.end_frame_exclusive) || s.start_frame < 0 || s.end_frame_exclusive <= s.start_frame) fail('END_BEFORE_START');
+      if (s.start_frame < priorEnd) fail('OVERLAPPING_TIMING');
+      if (s.end_frame_exclusive > p.durationFrames) fail('OUT_OF_VIDEO_RANGE');
+      if (!Array.isArray(s.lines) || s.lines.length < 1 || s.lines.length > 2 || s.lines.some(x=>typeof x !== 'string' || !x.trim())) fail('THREE_LINE_LAYOUT');
+      if (s.lines.join('') !== s.text.replace(/\s+/g,'')) fail('NON_VERBATIM_CAPTION');
+      priorEnd = s.end_frame_exclusive;
+    }
+    break;
+  }
   case 'PAN_ZOOM_FOCUS':
   case 'CALLOUT':
   case 'REGION_HIGHLIGHT':

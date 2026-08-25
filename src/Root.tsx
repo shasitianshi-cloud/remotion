@@ -6,10 +6,12 @@ import {StatCounter, statCounterSchema} from './compositions/StatCounter';
 import {ComparisonChart, comparisonChartSchema} from './compositions/ComparisonChart';
 import {ProgressSteps, progressStepsSchema} from './compositions/ProgressSteps';
 import {PanZoomFocus,panZoomFocusSchema,Callout,calloutSchema,RegionHighlight,regionHighlightSchema,PathTrace,pathTraceSchema,SplitCompare,splitCompareSchema,ImageSequence,imageSequenceSchema,DocumentFocus,documentFocusSchema,LabelAnchor,labelAnchorSchema} from './compositions/VisualPrimitives';
+import {CaptionLayer, captionLayerSchema} from './compositions/CaptionLayer';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition id="CAPTION-LAYER" component={CaptionLayer} schema={captionLayerSchema} durationInFrames={150} fps={30} width={1280} height={720} defaultProps={{backgroundColor:'#172033',segments:[],width:1280,height:720,fps:30,durationFrames:150,fontSize:42,fontWeight:'700',lineHeight:1.28,maxWidth:1088,bottomOffset:62,textAlign:'center',textColor:'#ffffff',plateColor:'rgba(0,0,0,0.72)'}} calculateMetadata={({props})=>({durationInFrames:props.durationFrames,fps:props.fps,width:props.width,height:props.height})}/>
       {[["PAN-ZOOM-FOCUS",PanZoomFocus,panZoomFocusSchema],["CALLOUT",Callout,calloutSchema],["REGION-HIGHLIGHT",RegionHighlight,regionHighlightSchema],["PATH-TRACE",PathTrace,pathTraceSchema],["SPLIT-COMPARE",SplitCompare,splitCompareSchema],["IMAGE-SEQUENCE",ImageSequence,imageSequenceSchema],["DOCUMENT-FOCUS",DocumentFocus,documentFocusSchema],["LABEL-ANCHOR",LabelAnchor,labelAnchorSchema]].map(([id,component,schema])=><Composition key={id as string} id={id as string} component={component as any} schema={schema as any} durationInFrames={90} fps={30} width={1280} height={720} defaultProps={{} as any} calculateMetadata={({props}:any)=>({durationInFrames:props.durationFrames,fps:props.fps,width:props.width,height:props.height})}/>)}
       <Composition
         id="ImageMotion"
