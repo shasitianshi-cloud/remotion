@@ -170,7 +170,7 @@ const render = spawnSync(
   [
     'render',
     'src/index.ts',
-    request.composition,
+    request.composition.replaceAll('_', '-'),
     outputPath,
     '--props',
     JSON.stringify(request.props),

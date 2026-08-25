@@ -10,7 +10,7 @@ import {PanZoomFocus,panZoomFocusSchema,Callout,calloutSchema,RegionHighlight,re
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      {[["PAN_ZOOM_FOCUS",PanZoomFocus,panZoomFocusSchema],["CALLOUT",Callout,calloutSchema],["REGION_HIGHLIGHT",RegionHighlight,regionHighlightSchema],["PATH_TRACE",PathTrace,pathTraceSchema],["SPLIT_COMPARE",SplitCompare,splitCompareSchema],["IMAGE_SEQUENCE",ImageSequence,imageSequenceSchema],["DOCUMENT_FOCUS",DocumentFocus,documentFocusSchema],["LABEL_ANCHOR",LabelAnchor,labelAnchorSchema]].map(([id,component,schema])=><Composition key={id as string} id={id as string} component={component as any} schema={schema as any} durationInFrames={90} fps={30} width={1280} height={720} defaultProps={{} as any} calculateMetadata={({props}:any)=>({durationInFrames:props.durationFrames,fps:props.fps,width:props.width,height:props.height})}/>)}
+      {[["PAN-ZOOM-FOCUS",PanZoomFocus,panZoomFocusSchema],["CALLOUT",Callout,calloutSchema],["REGION-HIGHLIGHT",RegionHighlight,regionHighlightSchema],["PATH-TRACE",PathTrace,pathTraceSchema],["SPLIT-COMPARE",SplitCompare,splitCompareSchema],["IMAGE-SEQUENCE",ImageSequence,imageSequenceSchema],["DOCUMENT-FOCUS",DocumentFocus,documentFocusSchema],["LABEL-ANCHOR",LabelAnchor,labelAnchorSchema]].map(([id,component,schema])=><Composition key={id as string} id={id as string} component={component as any} schema={schema as any} durationInFrames={90} fps={30} width={1280} height={720} defaultProps={{} as any} calculateMetadata={({props}:any)=>({durationInFrames:props.durationFrames,fps:props.fps,width:props.width,height:props.height})}/>)}
       <Composition
         id="ImageMotion"
         component={ImageMotion}
